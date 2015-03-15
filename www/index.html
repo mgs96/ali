@@ -9,166 +9,46 @@
         <title>Hello World</title>
     </head>
     <body>
-        <div class="container">
-            <canvas id="myElement" width="300" height="300"></canvas>
-        </div>
+        <div id="container"></div>
         <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="js/underscore.js"></script>
         <script type="text/javascript" src="js/hammer.min.js"></script>
-       
+        <script type="text/javascript" src="js/react.js"></script>
+        <script type="text/javascript" src="js/JSXTransformer.js"></script>
+        <script type="text/jsx" src="js/game.jsx"></script>
         <script type="text/javascript">
 
-            function offSets(){
-                return [[-1,-1], [-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
-            }
 
-            function randChar(){
-                return String.fromCharCode(_.random(65, 90));
-            }
+            // Board.prototype.adjacentCells = function(row, column){
+            //     return _.map([[-1,-1], [-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]], function(offset){
+            //         return [offset[0]+row, offset[1]+column];
+            //     }).filter(function(v){
+            //         var row = v[0];
+            //         var column = v[1];
+            //         var matrix = this.state.matrix;
+            //         return (0 <= row && row < 6) && (0 <= column && column < 6) && !matrix[row][column];
+            //     }, this);
+            // }
 
-            var Board = function(){
-                this.state = {};
-                this.state.selectedCells = [];
-                this.state.matrix = _.range(6).map(function(n) { return _.range(6).map(function(n) { return randChar() }); });
-                this.myElement = document.getElementById('myElement');
 
-                var mc = new Hammer(myElement);
-                mc.get('pan').set({ direction: Hammer.DIRECTION_ALL, threshold: 1 });
 
-                mc.on("panstart pan ", function(ev) {
-                    var x = ev.pointers[0].offsetX,
-                        y = ev.pointers[0].offsetY;
-
-                    if(ev.type == "pan" || ev.type == "panstart"){
-                        console.log([y, x]);
-                        this.detectCell(x, y, 300);
-                    }
-                }.bind(this));
-
-                mc.on("panend", function(ev){
-                    console.log(this.currentWord());
-                    this.setState("selectedCells", []);
-                }.bind(this));
-
-                $(document).on("overCell", function(ev){ 
-                    console.log(ev);
-                });
-
-                //this.putWord("ABCDEFGHI", 0, 4);
-
-            }
-
-            Board.prototype.adjacentCells = function(row, column){
-                return _.map([[-1,-1], [-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]], function(offset){
-                    return [offset[0]+row, offset[1]+column];
-                }).filter(function(v){
-                    var row = v[0];
-                    var column = v[1];
-                    var matrix = this.state.matrix;
-                    return (0 <= row && row < 6) && (0 <= column && column < 6) && !matrix[row][column];
-                }, this);
-            }
-
-            Board.prototype.drawBoard = function() {
-                var myElement = this.myElement;
-                context = myElement.getContext("2d");
-
-                context.clearRect(0, 0, 300, 300);
-
-                context.font = "bold 30px sans-serif";
-                for(var i=0;i<6;i++){
-                    for(var j=0;j<6;j++){
-                        var letter = this.state.matrix[i][j];
-
-                        tile_style =  _.any(this.state.selectedCells, function(cell){ return _.isEqual(cell, [i, j])})  ? 'white' : 'red';
-                        letter_style =  _.any(this.state.selectedCells, function(cell){ return _.isEqual(cell, [i, j])})  ? 'black' : 'white';
-
-                        context.fillStyle = tile_style;
-                        context.fillRect(j*50+4, i*50+4, 50-8, 50-8);
-
-                        if(letter){
-                            context.fillStyle = letter_style;
-                            context.beginPath();
-                            context.fillText(letter, 50*j+15, 50*(i+1)-15);
-                            context.stroke();
-                        }
-                    }
-                }
-            }
-
-            Board.prototype.currentWord = function(){
-                return _.map(this.state.selectedCells, function(cell){
-                    return this.state.matrix[cell[0]][cell[1]]; 
-                }, this).join("");
-            }
-
-            Board.prototype.detectCell = function(x, y, side){
-                var tile_size = (side/6);
-
-                var row = Math.floor(y / tile_size);
-                var column = Math.floor(x / tile_size);
-
-                var circle_x = tile_size * column + tile_size/2;
-                var circle_y = tile_size * row + tile_size/2;
-
-                var dx = Math.abs(x - circle_x);
-                var dy = Math.abs(y - circle_y);
-                var dis = Math.sqrt(dx*dx + dy*dy);
-
-                context = this.myElement.getContext("2d");
-                context.beginPath();
-                context.arc(x, y, 1, 0, 2 * Math.PI, false);
-                context.lineWidth = 1;
-                context.strokeStyle = 'black';
-
-                var newCoordinate = [row, column];
-                var selectedCells = this.state.selectedCells;
-                if(dis <= 1*(tile_size/2) && !_.isEqual(selectedCells[selectedCells.length-1], newCoordinate)){
-                    /*context.strokeStyle = 'red';
-                    context.fillStyle = 'red';
-                    context.fill();*/
-
-                    var oldSelectedCells = this.getState("selectedCells");
-                    oldSelectedCells.push(newCoordinate);
-                    var newSelectedCell = oldSelectedCells;
-                    this.setState("selectedCells", newSelectedCell);
-
-                    console.log([row, column]);
-                }
-                context.stroke();
-            }
-
-            Board.prototype.putWord = function(word, row, column){
-                if(word != ""){
-                    var adjacentCells = this.adjacentCells(row, column);
-                    if(adjacentCells){
-                        var randomIndex = _.random(0, adjacentCells.length-1);
-                        var adjacentCell = adjacentCells[randomIndex];
+            // Board.prototype.putWord = function(word, row, column){
+            //     if(word != ""){
+            //         var adjacentCells = this.adjacentCells(row, column);
+            //         if(adjacentCells){
+            //             var randomIndex = _.random(0, adjacentCells.length-1);
+            //             var adjacentCell = adjacentCells[randomIndex];
                         
-                        this.state.matrix[adjacentCell[0]][adjacentCell[1]] = word[0];
-                        return true && this.putWord(word.substring(1), adjacentCell[0], adjacentCell[1]);
-                    }
-                    else
-                        return false;
-                }
-                return true;
-            }
+            //             this.state.matrix[adjacentCell[0]][adjacentCell[1]] = word[0];
+            //             return true && this.putWord(word.substring(1), adjacentCell[0], adjacentCell[1]);
+            //         }
+            //         else
+            //             return false;
+            //     }
+            //     return true;
+            // }
 
-            Board.prototype.setState = function (variable, value){
-                this.state[variable] = value;
-                this.drawBoard();
-            }
 
-            Board.prototype.getState = function(variable){
-                return this.state[variable];
-            }
-
-            var v = new Board();
-            v.drawBoard();
-
-            // Hammer.on(window, function(ev) {
-            //     console.log(ev.type);
-            // });
         </script>
     </body>
 </html>

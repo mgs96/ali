@@ -54,7 +54,7 @@ table {
   font: 30px/300px Helvetica, Arial, sans-serif;
 }
 
-.container{
+#container{
 	width: 95%;
 	margin: 0 auto;
 	max-width: 300px;
