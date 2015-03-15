@@ -48,8 +48,19 @@ table {
 }
 
 #myElement {
-  background: silver;
+  background: #000080;
   height: 300px;
   text-align: center;
   font: 30px/300px Helvetica, Arial, sans-serif;
+}
+
+.container{
+	width: 95%;
+	margin: 0 auto;
+	max-width: 300px;
+	margin-top: 20px;
+}
+
+canvas {
+	width: 100%;
 }

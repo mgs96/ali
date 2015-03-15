@@ -9,7 +9,9 @@
         <title>Hello World</title>
     </head>
     <body>
-        <canvas id="myElement" width="300" height="300"></canvas>
+        <div class="container">
+            <canvas id="myElement" width="300" height="300"></canvas>
+        </div>
         <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="js/underscore.js"></script>
         <script type="text/javascript" src="js/hammer.min.js"></script>
@@ -34,10 +36,11 @@
                 mc.get('pan').set({ direction: Hammer.DIRECTION_ALL, threshold: 1 });
 
                 mc.on("panstart pan ", function(ev) {
-                    var x = ev.pointers[0].pageX,
-                        y = ev.pointers[0].pageY;
-                    
+                    var x = ev.pointers[0].offsetX,
+                        y = ev.pointers[0].offsetY;
+
                     if(ev.type == "pan" || ev.type == "panstart"){
+                        console.log([y, x]);
                         this.detectCell(x, y, 300);
                     }
                 }.bind(this));
@@ -50,6 +53,20 @@
                 $(document).on("overCell", function(ev){ 
                     console.log(ev);
                 });
+
+                //this.putWord("ABCDEFGHI", 0, 4);
+
+            }
+
+            Board.prototype.adjacentCells = function(row, column){
+                return _.map([[-1,-1], [-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]], function(offset){
+                    return [offset[0]+row, offset[1]+column];
+                }).filter(function(v){
+                    var row = v[0];
+                    var column = v[1];
+                    var matrix = this.state.matrix;
+                    return (0 <= row && row < 6) && (0 <= column && column < 6) && !matrix[row][column];
+                }, this);
             }
 
             Board.prototype.drawBoard = function() {
@@ -58,37 +75,23 @@
 
                 context.clearRect(0, 0, 300, 300);
 
-                for(var i=0;i<this.state.selectedCells.length;i++){
-                    var cell = this.state.selectedCells[i],
-                        column = cell[0],
-                        row = cell[1];
-                    context.fillRect(column*50, row*50, 50, 50);
-                }
-                
-                for(var i=0;i<300;i=i+myElement.width/6){
-                    context.beginPath();
-                    context.strokeStyle = 'black';
-                    context.moveTo(i, 0);
-                    context.lineTo(i, myElement.width);
-                    context.stroke();
-                }
-
-                for(var i=0;i<300;i=i+myElement.width/6){
-                    context.beginPath();
-                    context.strokeStyle = 'black';
-                    context.moveTo(0, i);
-                    context.lineTo(myElement.width, i);
-                    context.stroke();
-                }
-
                 context.font = "bold 30px sans-serif";
                 for(var i=0;i<6;i++){
                     for(var j=0;j<6;j++){
                         var letter = this.state.matrix[i][j];
-                        context.fillStyle = 'black';
-                        context.beginPath();
-                        context.fillText(letter, 50*i+15, 50*(j+1)-15);
-                        context.stroke();
+
+                        tile_style =  _.any(this.state.selectedCells, function(cell){ return _.isEqual(cell, [i, j])})  ? 'white' : 'red';
+                        letter_style =  _.any(this.state.selectedCells, function(cell){ return _.isEqual(cell, [i, j])})  ? 'black' : 'white';
+
+                        context.fillStyle = tile_style;
+                        context.fillRect(j*50+4, i*50+4, 50-8, 50-8);
+
+                        if(letter){
+                            context.fillStyle = letter_style;
+                            context.beginPath();
+                            context.fillText(letter, 50*j+15, 50*(i+1)-15);
+                            context.stroke();
+                        }
                     }
                 }
             }
@@ -118,25 +121,37 @@
                 context.lineWidth = 1;
                 context.strokeStyle = 'black';
 
-                var newCoordinate = [column, row];
+                var newCoordinate = [row, column];
                 var selectedCells = this.state.selectedCells;
                 if(dis <= 1*(tile_size/2) && !_.isEqual(selectedCells[selectedCells.length-1], newCoordinate)){
-                    context.strokeStyle = 'red';
+                    /*context.strokeStyle = 'red';
                     context.fillStyle = 'red';
-                    context.fill();
+                    context.fill();*/
 
                     var oldSelectedCells = this.getState("selectedCells");
                     oldSelectedCells.push(newCoordinate);
                     var newSelectedCell = oldSelectedCells;
                     this.setState("selectedCells", newSelectedCell);
+
+                    console.log([row, column]);
                 }
                 context.stroke();
             }
 
             Board.prototype.putWord = function(word, row, column){
                 if(word != ""){
-
+                    var adjacentCells = this.adjacentCells(row, column);
+                    if(adjacentCells){
+                        var randomIndex = _.random(0, adjacentCells.length-1);
+                        var adjacentCell = adjacentCells[randomIndex];
+                        
+                        this.state.matrix[adjacentCell[0]][adjacentCell[1]] = word[0];
+                        return true && this.putWord(word.substring(1), adjacentCell[0], adjacentCell[1]);
+                    }
+                    else
+                        return false;
                 }
+                return true;
             }
 
             Board.prototype.setState = function (variable, value){
