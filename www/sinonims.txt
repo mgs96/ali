@@ -1,0 +1,53 @@
+Know -> Understand, recognize, cognize
+Have -> Possess, own
+Right -> Fair, just, good, legal, proper, true
+Like -> Similar, Alike
+Now -> Inmmediately, Instantly, Presently
+Really -> certainly, indeed, undoubtedly, unquestionably
+Look -> Peek, stare, view
+Make -> Manufacture, produce
+Talk -> discourse, sermon
+People -> Community, crowd, family, folk, public, society
+Better -> Superior, improved
+Believe -> Trust, rely on
+Fine -> excellent, admirable, cool, elegant, expensive
+Stop -> Pause, cease, block
+Guy -> Boy, dude, man
+wrong -> incorrect, bad, erroneous, false, untrue
+new -> modern, recent
+guess -> Assumption, conjecture, conclusion, hypothesis
+Bad -> Crummy, Atrocious, awful, cheap, poor, sad
+Place -> home, house, area
+father -> dad, parent, progenitor
+course -> program, policy, plan, way
+hell -> Inferno, nightmare, purgatory, abyss
+family -> clan, group
+idea -> belief, opinion, perception
+ask -> question, demand, inquire, request
+money -> bill, capital, cash, wealth
+pretty -> beautiful, charming, cute, elegant, graceful, handsome
+friend -> acquaintance, ally, buddy, 
+problem -> dilemma, issue, question
+alone -> apart, separate, solo
+forsaken -> abandoned, deserted
+truth -> veracity, fact, certainty
+person -> human, individual
+lost -> disoriented, miss, missed
+crazy -> insane, mad
+afraid -> fearful, anxious, frightened, scared, nervous
+happy -> cheerful, delighted, elated, glad, merry, overjoyed
+funny -> amusing, entertaining, ludicrous, droll
+quick -> abrupt, active,agile, brief,rapid
+usually -> normally, generally, frequently, mostly, sometimes, ordinarily, occasionally
+pleasure -> amusement, hobby, joy, comfort, enjoyment, comfort, satisfaction, thrill
+horrible -> terrible, terrifying, hideous, heinous, grim, nasty, awful
+excellent -> fine, finest superb, superlative, great, good
+brilliant -> bright, intense
+loose -> baggy, easy, lax
+relaxed -> calm, casual, carefree, breezy
+lovely -> delicious,  pleasant, pleasing, pretty
+seriously ->sincerely, actively
+
+
+
+

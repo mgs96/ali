@@ -15,21 +15,28 @@
        
         <script type="text/javascript">
 
+
+
             var Board = function(){
-                this.selectedCells = [];
+                this.state = {};
+                this.state.selectedCells = [];
                 this.myElement = document.getElementById('myElement');
 
                 var mc = new Hammer(myElement);
-                mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+                mc.get('pan').set({ direction: Hammer.DIRECTION_ALL, threshold: 1 });
 
-                mc.on("pan panend", function(ev) {
+                mc.on("panstart pan ", function(ev) {
                     var x = ev.pointers[0].pageX,
                         y = ev.pointers[0].pageY;
                     
-                    if(ev.type == "pan"){
-                        detectCell(x, y, 300);
+                    if(ev.type == "pan" || ev.type == "panstart"){
+                        this.detectCell(x, y, 300);
                     }
-                });
+                }.bind(this));
+
+                mc.on("panend", function(ev){
+                    this.setState("selectedCells", []);
+                }.bind(this));
 
                 $(document).on("overCell", function(ev){ 
                     console.log(ev);
@@ -39,23 +46,75 @@
             Board.prototype.drawBoard = function() {
                 var myElement = this.myElement;
                 context = myElement.getContext("2d");
+
+                context.clearRect(0, 0, 300, 300);
+
+                for(var i=0;i<this.state.selectedCells.length;i++){
+                    var cell = this.state.selectedCells[i],
+                        column = cell[0],
+                        row = cell[1];
+                    context.fillRect(column*50, row*50, 50, 50);
+                }
+                
                 for(var i=0;i<300;i=i+myElement.width/6){
+                    context.beginPath();
+                    context.strokeStyle = 'black';
                     context.moveTo(i, 0);
                     context.lineTo(i, myElement.width);
+                    context.stroke();
                 }
 
                 for(var i=0;i<300;i=i+myElement.width/6){
+                    context.beginPath();
+                    context.strokeStyle = 'black';
                     context.moveTo(0, i);
                     context.lineTo(myElement.width, i);
+                    context.stroke();
                 }
+            }
 
-                for(var i=0;i<this.selectedCells.length;i++){
-                    var cell = this.selectedCells[i];
-                    var row = cell[0];
-                    var column = cell[1];
-                    context.fillRect(row*50, column*50, (row+1)*50, (column+1)*50);
+            Board.prototype.detectCell = function(x, y, side){
+                var tile_size = (side/6);
+
+                var row = Math.floor(y / tile_size);
+                var column = Math.floor(x / tile_size);
+
+                var circle_x = tile_size * column + tile_size/2;
+                var circle_y = tile_size * row + tile_size/2;
+
+                var dx = Math.abs(x - circle_x);
+                var dy = Math.abs(y - circle_y);
+                var dis = Math.sqrt(dx*dx + dy*dy);
+
+                context = this.myElement.getContext("2d");
+                context.beginPath();
+                context.arc(x, y, 1, 0, 2 * Math.PI, false);
+                context.lineWidth = 1;
+                context.strokeStyle = 'black';
+
+                if(dis <= 1*(tile_size/2)){
+                    context.strokeStyle = 'red';
+                    context.fillStyle = 'red';
+                    context.fill();
+
+                    var oldSelectedCells = this.getState("selectedCells");
+                    oldSelectedCells.push([column, row]);
+                    var newSelectedCell = oldSelectedCells;
+                    this.setState("selectedCells", newSelectedCell);
+                    //$.event.trigger({type: "overCell", row: row, column: column});
+                    //console.log("Row "+row+" Column "+column);
                 }
                 context.stroke();
+
+            }
+
+            Board.prototype.setState = function (variable, value){
+                this.state[variable] = value;
+                this.drawBoard();
+            }
+
+            Board.prototype.getState = function(variable){
+                return this.state[variable];
             }
 
             var v = new Board();
@@ -64,9 +123,6 @@
             // Hammer.on(window, function(ev) {
             //     console.log(ev.type);
             // });
-
- 
-
         </script>
     </body>
 </html>
