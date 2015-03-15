@@ -36,13 +36,10 @@
                 mc.get('pan').set({ direction: Hammer.DIRECTION_ALL, threshold: 1 });
 
                 mc.on("panstart pan ", function(ev) {
-                    var x = ev.pointers[0].offsetX,
-                        y = ev.pointers[0].offsetY;
-
-                    if(ev.type == "pan" || ev.type == "panstart"){
-                        console.log([y, x]);
-                        this.detectCell(x, y, 300);
-                    }
+                    var x = ev.pointers[0].pageX-ev.target.offsetLeft,
+                        y = ev.pointers[0].pageY-ev.target.offsetTop;
+                    console.log([y, x]);
+                    this.detectCell(x, y, 300);
                 }.bind(this));
 
                 mc.on("panend", function(ev){
@@ -124,9 +121,6 @@
                 var newCoordinate = [row, column];
                 var selectedCells = this.state.selectedCells;
                 if(dis <= 1*(tile_size/2) && !_.isEqual(selectedCells[selectedCells.length-1], newCoordinate)){
-                    /*context.strokeStyle = 'red';
-                    context.fillStyle = 'red';
-                    context.fill();*/
 
                     var oldSelectedCells = this.getState("selectedCells");
                     oldSelectedCells.push(newCoordinate);
@@ -165,10 +159,6 @@
 
             var v = new Board();
             v.drawBoard();
-
-            // Hammer.on(window, function(ev) {
-            //     console.log(ev.type);
-            // });
         </script>
     </body>
 </html>
